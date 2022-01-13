@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vanilla Boilerplate</title>
+  </head>
+
+  <body>
+   
+<h2 id = "blah"> </h2>
+   
+<script>
+var call = new XMLHttpRequest();
+call.open("GET", "https://deep-index.moralis.io/api/v2/0x7da4b25d2a50518237b0099b185e6bcada568a86/nft?chain=eth&format=decimal", false);
+call.setRequestHeader("accept", "application/json");
+call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
+call.send();
+var jsonified = JSON.parse(call.response);
+document.getElementById("blah").innerHTML = jsonified.result[5].token_uri;
+
+
+</script>
+  </body>
+</html>
