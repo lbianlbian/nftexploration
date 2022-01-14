@@ -29,7 +29,7 @@ function showNFTs(){
 	url += address;
 	url += "/nft?chain=eth&format=decimal";
 
-	if(address.substring(" ") != -1){
+	if(address.indexOf(" ") != -1){
 		var message = document.createElement("h2");
 		message.innerHTML = "Valid Ethereum addresses have no spaces.";
 		display.appendChild(message);
