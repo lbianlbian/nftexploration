@@ -1,22 +1,103 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Vanilla Boilerplate</title>
-  </head>
-
-  <body>
-   
-<h2 id = "blah"> </h2>
+<head>
+<title>NFTeam, Barter multiple NFTs</title>
+<style>
+img{
+	width:10%;
+}
+input{
+	width:50%;
+	font-size:200%;
+}
+</style>
+</head>
+<body>
+<h1> Test with this address: 0x7da4b25d2a50518237b0099b185e6bcada568a86 </h1>
+<input id = "addr" type = "text" value = "Enter an Ethereum address: 0x.....">
+<br><br>
+<button onclick = "showNFTs()"> See this person's NFTs! </button>
+<div id = "display"> </div>
    
 <script>
-var call = new XMLHttpRequest();
-call.open("GET", "https://deep-index.moralis.io/api/v2/0x7da4b25d2a50518237b0099b185e6bcada568a86/nft?chain=eth&format=decimal", false);
-call.setRequestHeader("accept", "application/json");
-call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
-call.send();
-var jsonified = JSON.parse(call.response);
-document.getElementById("blah").innerHTML = jsonified.result[5].token_uri;
+function showNFTs(){
+	var display = document.getElementById("display");
+	display.innerHTML = "";
 
+	var address = document.getElementById("addr").value;
+	var url = "https://deep-index.moralis.io/api/v2/";
+	url += address;
+	url += "/nft?chain=eth&format=decimal";
+
+	if(address.substring(" ") != -1){
+		var message = document.createElement("h2");
+		message.innerHTML = "Valid Ethereum addresses have no spaces.";
+		display.appendChild(message);
+		return;
+	}
+
+	var call = new XMLHttpRequest();
+	call.open("GET", url, false);
+	call.setRequestHeader("accept", "application/json");
+	call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
+	call.send();
+
+	var jsonified = JSON.parse(call.response);
+	var numNFTs = jsonified.total;
+	if(numNFTs == 0){
+		var message = document.createElement("h2");
+		message.innerHTML = "This address has no NFTs";
+		display.appendChild(message);
+	}
+
+	for(var x = 0; x < numNFTs; x++){
+
+		if(jsonified.result[x].contract_type != "ERC721"){
+			continue;
+		}
+
+		if(jsonified.result[x].token_address == null){
+			continue;
+		}
+		var contractAddress = document.createElement("h2");
+		contractAddress.innerHTML = "Contract address: " + jsonified.result[x].token_address;
+		display.appendChild(contractAddress);
+
+		if(jsonified.result[x].name != null){
+			var collection = document.createElement("h2");
+			collection.innerHTML = "Collection: " + jsonified.result[x].name;
+			display.appendChild(collection);
+		}
+
+		if(jsonified.result[x].token_id == null){
+			continue;
+		}
+		var tokenID = document.createElement("h2");
+		tokenID.innerHTML = "Token ID: " + jsonified.result[x].token_id;
+		display.appendChild(tokenID);
+		
+		//check for null metadata
+		if(jsonified.result[x].metadata != null){
+			var image = document.createElement("img");
+			var imgUrl = JSON.parse(jsonified.result[x].metadata).image;
+			if(imgUrl == null){
+				imgUrl = JSON.parse(jsonified.result[x].metadata).image_url;
+			}
+			if(imgUrl.indexOf("ipfs://") == 0){
+				imgUrl = "https://ipfs.io/ipfs/" + imgUrl.substring(7);
+			}
+			image.setAttribute("src", imgUrl);
+			display.appendChild(image);
+		}
+
+		var lineBreak = document.createElement("hr");
+		lineBreak.setAttribute("width", "100%");
+		lineBreak.setAttribute("size", "3");
+		lineBreak.setAttribute("color", "blue");
+		display.appendChild(lineBreak);
+	}
+		
+}
 
 </script>
   </body>
