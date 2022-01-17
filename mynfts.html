@@ -3,18 +3,19 @@
 <title> My NFTs </title>
 </head>
 <body>
+<button onclick = "connect()"> Connect to Metamask </button>
+<h2 id = "showAcc"> </h2>
+<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src = "https://unpkg.com/web3@latest/dist/web3.min.js"> </script>
 <script>
-//var web3 = new Web3(new Web3.providers.WebsocketProvider("wss://mainnet.infura.io/ws"));
-window.addEventListener("load", function(){
-	if(typeof web3 !== "undefined"){
-		var web3js = new Web3(web3.currentProvider);
-		console.log(web3.eth.accounts[0]);
-	}
-	else{
-		console.log("install metamask");
-	}
-})
+if (typeof window.ethereum !== 'undefined') {
+  console.log('MetaMask is installed!');
+}
+async function connect(){
+	ethereum.request({ method: 'eth_requestAccounts' });
+	const accounts = await ethereum.request({ method: 'eth_accounts' });
+	document.getElementById("showAcc").innerHTML = accounts[0];
+}
 </script>
 </body>
 </html>
