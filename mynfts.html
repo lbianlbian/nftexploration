@@ -24,7 +24,6 @@ if (typeof window.ethereum !== 'undefined') {
 }
 
 async function connect(){
-	ethereum.request({ method: 'eth_requestAccounts' });
 	const accounts = await ethereum.request({ method: 'eth_accounts' });
 	document.getElementById("showAcc").innerHTML = accounts[0];
 	address = accounts[0];	
