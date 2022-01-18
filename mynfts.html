@@ -22,7 +22,7 @@ var address = "";
 if (typeof window.ethereum !== 'undefined') {
   console.log('MetaMask is installed!');
 }
-
+//please commit
 async function connect(){
 	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 	document.getElementById("showAcc").innerHTML = accounts[0];
