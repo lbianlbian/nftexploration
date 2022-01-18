@@ -3,19 +3,106 @@
 <title> My NFTs </title>
 </head>
 <body>
+<h1> Click the button below to see all ERC721 NFTs you own! </h1>
 <button onclick = "connect()"> Connect to Metamask </button>
 <h2 id = "showAcc"> </h2>
+<h2> If you have clicked the button and connected with MetaMask, and your address says "undefined", try reloading the page. </h2>
+<h1> My NFTs </h1>
+<button onclick = "next20()"> Next </button>
+<button onclick = "prev20()"> Previous </button>
+<div id = "display"> </div>
+
+
 <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src = "https://unpkg.com/web3@latest/dist/web3.min.js"> </script>
 <script>
+var currentNFTWindow = 0;
+var address = "";
+
 if (typeof window.ethereum !== 'undefined') {
   console.log('MetaMask is installed!');
 }
+
 async function connect(){
 	ethereum.request({ method: 'eth_requestAccounts' });
 	const accounts = await ethereum.request({ method: 'eth_accounts' });
 	document.getElementById("showAcc").innerHTML = accounts[0];
+	address = accounts[0];	
+
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += accounts[0];
+	url += "&order_direction=desc&offset=0&limit=20";
+	
+	openSea(url);
+	
 }
+
+function openSea(url){
+	var display = document.getElementById("display");
+	display.innerHTML = "";
+
+	//var url = "https://api.opensea.io/api/v1/assets?owner=0x7da4b25d2a50518237b0099b185e6bcada568a86&order_direction=desc&offset=0&limit=20";
+	var call = new XMLHttpRequest();
+	call.open("GET", url, false);
+	call.setRequestHeader("Accept", "application/json");
+	call.send();
+	
+	var jsonified = JSON.parse(call.responseText);
+	for(var x = 0; x < 20; x++){
+		var isERC721 = jsonified.assets[x].asset_contract.schema_name == "ERC721";
+		if(!isERC721){
+			continue;
+		}
+
+		var tokenid = jsonified.assets[x].token_id;
+		var image = jsonified.assets[x].image_preview_url;
+		var name = jsonified.assets[x].name;
+		var contractAddress = jsonified.assets[x].asset_contract.address;
+		
+		var nameTag = document.createElement("h1");
+		nameTag.innerHTML = name;
+		display.appendChild(nameTag);
+
+		var tokenidTag = document.createElement("h2");
+		tokenidTag.innerHTML = "Token id: " + tokenid;
+		display.appendChild(tokenidTag);
+
+		var contractAddressTag = document.createElement("h2");
+		contractAddressTag.innerHTML = "Contract Address: " + contractAddress;
+		display.appendChild(contractAddressTag);
+
+		var imageTag = document.createElement("img");
+		imageTag.setAttribute("src", image);
+		display.appendChild(imageTag);
+
+		var lineBreak = document.createElement("hr");
+		lineBreak.setAttribute("width", "100%");
+		lineBreak.setAttribute("size", "3");
+		lineBreak.setAttribute("color", "blue");
+		display.appendChild(lineBreak);
+	}
+}
+
+function next20(){
+	currentNFTWindow += 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += address;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	openSea(url);
+}
+
+function prev20(){
+	currentNFTWindow -= 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += address;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	openSea(url);
+}
+
 </script>
 </body>
 </html>
