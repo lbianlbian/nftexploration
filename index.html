@@ -59,7 +59,6 @@ function showNFTs(url){
 	call.send();
 
 	var jsonified = JSON.parse(call.response);
-	console.log(jsonified.assets[0].asset_contract);
 	var numNFTs = jsonified.assets.length;
 	if(numNFTs == 0){
 		var message = document.createElement("h2");
