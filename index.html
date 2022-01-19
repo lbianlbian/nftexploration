@@ -59,6 +59,7 @@ function showNFTs(url){
 	call.send();
 
 	var jsonified = JSON.parse(call.response);
+	console.log(jsonified.assets[0].asset_contract);
 	var numNFTs = jsonified.assets.length;
 	if(numNFTs == 0){
 		var message = document.createElement("h2");
@@ -66,7 +67,7 @@ function showNFTs(url){
 		display.appendChild(message);
 	}
 
-	for(var x = 0; x < 20; x++){
+	for(var x = 0; x < numNFTs; x++){
 
 		if(jsonified.assets[x].asset_contract.schema_name != "ERC721"){
 			continue;
