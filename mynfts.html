@@ -22,7 +22,7 @@ var address = "";
 if (typeof window.ethereum !== 'undefined') {
   console.log('MetaMask is installed!');
 }
-//please commit
+
 async function connect(){
 	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 	document.getElementById("showAcc").innerHTML = accounts[0];
@@ -47,7 +47,14 @@ function openSea(url){
 	call.send();
 	
 	var jsonified = JSON.parse(call.responseText);
-	for(var x = 0; x < 20; x++){
+	var numNFTs = jsonified.assets.length;
+	if(numNFTs == 0){
+		var message = document.createElement("h2");
+		message.innerHTML = "This address has no NFTs";
+		display.appendChild(message);
+	}
+
+	for(var x = 0; x < numNFTs; x++){
 		var isERC721 = jsonified.assets[x].asset_contract.schema_name == "ERC721";
 		if(!isERC721){
 			continue;
