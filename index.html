@@ -16,20 +16,36 @@ input{
 <h1> Test with this address: 0x7da4b25d2a50518237b0099b185e6bcada568a86 </h1>
 <input id = "addr" type = "text" value = "Enter an Ethereum address: 0x.....">
 <br><br>
-<button onclick = "showNFTs()"> See this person's NFTs! </button>
+<button onclick = "showNFTs('firstTimeCalled')"> See this person's NFTs! </button>
+<button onclick = "next20()"> Next 20 </button>
+<button onclick = "prev20()"> Previous 20 </button>
 <div id = "display"> </div>
    
 <script>
-function showNFTs(){
+var currentNFTWindow = 0;
+var globalAddress = "";
+
+function showNFTs(url){
 	var display = document.getElementById("display");
 	display.innerHTML = "";
 
 	var address = document.getElementById("addr").value;
+	globalAddress = address;
+
+	if(url == "firstTimeCalled"){
+		var url = "https://api.opensea.io/api/v1/assets?owner=";
+		url += address;
+		url += "&order_direction=desc&offset=0&limit=20";
+	}
+
+	/*
 	var url = "https://deep-index.moralis.io/api/v2/";
 	url += address;
 	url += "/nft?chain=eth&format=decimal";
+	*/
 
 	if(address.indexOf(" ") != -1){
+		console.log(address.substring(" "));
 		var message = document.createElement("h2");
 		message.innerHTML = "Valid Ethereum addresses have no spaces.";
 		display.appendChild(message);
@@ -39,56 +55,41 @@ function showNFTs(){
 	var call = new XMLHttpRequest();
 	call.open("GET", url, false);
 	call.setRequestHeader("accept", "application/json");
-	call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
+	//call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
 	call.send();
 
 	var jsonified = JSON.parse(call.response);
-	var numNFTs = jsonified.total;
+	var numNFTs = jsonified.assets.length;
 	if(numNFTs == 0){
 		var message = document.createElement("h2");
 		message.innerHTML = "This address has no NFTs";
 		display.appendChild(message);
 	}
 
-	for(var x = 0; x < numNFTs; x++){
+	for(var x = 0; x < 20; x++){
 
-		if(jsonified.result[x].contract_type != "ERC721"){
+		if(jsonified.assets[x].asset_contract.schema_name != "ERC721"){
 			continue;
 		}
 
-		if(jsonified.result[x].token_address == null){
-			continue;
-		}
 		var contractAddress = document.createElement("h2");
-		contractAddress.innerHTML = "Contract address: " + jsonified.result[x].token_address;
+		contractAddress.innerHTML = "Contract address: " + jsonified.assets[x].asset_contract.address;
 		display.appendChild(contractAddress);
 
-		if(jsonified.result[x].name != null){
-			var collection = document.createElement("h2");
-			collection.innerHTML = "Collection: " + jsonified.result[x].name;
-			display.appendChild(collection);
-		}
+		var collection = document.createElement("h2");
+		collection.innerHTML = "Collection: " + jsonified.assets[x].name;
+		display.appendChild(collection);
 
-		if(jsonified.result[x].token_id == null){
-			continue;
-		}
 		var tokenID = document.createElement("h2");
-		tokenID.innerHTML = "Token ID: " + jsonified.result[x].token_id;
+		tokenID.innerHTML = "Token ID: " + jsonified.assets[x].token_id;
 		display.appendChild(tokenID);
 		
-		//check for null metadata
-		if(jsonified.result[x].metadata != null){
-			var image = document.createElement("img");
-			var imgUrl = JSON.parse(jsonified.result[x].metadata).image;
-			if(imgUrl == null){
-				imgUrl = JSON.parse(jsonified.result[x].metadata).image_url;
-			}
-			if(imgUrl.indexOf("ipfs://") == 0){
-				imgUrl = "https://ipfs.io/ipfs/" + imgUrl.substring(7);
-			}
-			image.setAttribute("src", imgUrl);
-			display.appendChild(image);
-		}
+		
+		var image = document.createElement("img");
+		var imgUrl = jsonified.assets[x].image_preview_url;		
+		image.setAttribute("src", imgUrl);
+		display.appendChild(image);
+		
 
 		var lineBreak = document.createElement("hr");
 		lineBreak.setAttribute("width", "100%");
@@ -97,6 +98,26 @@ function showNFTs(){
 		display.appendChild(lineBreak);
 	}
 		
+}
+
+function next20(){
+	currentNFTWindow += 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += globalAddress;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	showNFTs(url);
+}
+
+function prev20(){
+	currentNFTWindow -= 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += globalAddress;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	showNFTs(url);
 }
 
 </script>
