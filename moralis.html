@@ -3,6 +3,12 @@
   <head>
     <title>Vanilla Boilerplate</title>
     <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+
+
+  </head>
+
+  <body>
+
     <script>
 var currentNFTWindow = 0;
 var address = "";
@@ -18,6 +24,7 @@ async function login() {
       .then(function (user) {
         document.getElementById("addressHere").innerHTML = user.get("ethAddress");
       address = user.get("ethAddress");
+	console.log(user.get("ethAddress"));
 	var url = "https://api.opensea.io/api/v1/assets?owner=";
 	url += address;
 	url += "&order_direction=desc&offset=0&limit=20";
@@ -105,9 +112,6 @@ function prev20(){
 
 </script>
 
-  </head>
-
-  <body>
     <h1>Moralis Hello World!</h1>
 
     <button id="btn-login" onclick = "login()">Moralis Metamask Login</button>
