@@ -4,6 +4,8 @@
     <title>Vanilla Boilerplate</title>
     <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
     <script>
+var currentNFTWindow = 0;
+var address = "";
 	/* Moralis init code */
 const serverUrl = "https://xgz77uvcnzvk.usemoralis.com:2053/server";
 const appId = "NPxW3n4VuNDB70y55qLhWhfP3pJThcsW1W4zjCT4";
@@ -14,13 +16,91 @@ async function login() {
   if (!user) {
     user = await Moralis.authenticate({ signingMessage: "Log in using Moralis" })
       .then(function (user) {
-        console.log("logged in user:", user);
-        console.log(user.get("ethAddress"));
-      })
+        document.getElementById("addressHere").innerHTML = user.get("ethAddress");
+      address = user.get("ethAddress");
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += address;
+	url += "&order_direction=desc&offset=0&limit=20";
+	
+	openSea(url);
+	})
       .catch(function (error) {
         console.log(error);
       });
   }
+}
+
+function openSea(url){
+	var display = document.getElementById("display");
+	display.innerHTML = "";
+
+	//var url = "https://api.opensea.io/api/v1/assets?owner=0x7da4b25d2a50518237b0099b185e6bcada568a86&order_direction=desc&offset=0&limit=20";
+	var call = new XMLHttpRequest();
+	call.open("GET", url, false);
+	call.setRequestHeader("Accept", "application/json");
+	call.send();
+	
+	var jsonified = JSON.parse(call.responseText);
+	var numNFTs = jsonified.assets.length;
+	if(numNFTs == 0){
+		var message = document.createElement("h2");
+		message.innerHTML = "This address has no NFTs";
+		display.appendChild(message);
+	}
+
+	for(var x = 0; x < numNFTs; x++){
+		var isERC721 = jsonified.assets[x].asset_contract.schema_name == "ERC721";
+		if(!isERC721){
+			continue;
+		}
+
+		var tokenid = jsonified.assets[x].token_id;
+		var image = jsonified.assets[x].image_preview_url;
+		var name = jsonified.assets[x].name;
+		var contractAddress = jsonified.assets[x].asset_contract.address;
+		
+		var nameTag = document.createElement("h1");
+		nameTag.innerHTML = name;
+		display.appendChild(nameTag);
+
+		var tokenidTag = document.createElement("h2");
+		tokenidTag.innerHTML = "Token id: " + tokenid;
+		display.appendChild(tokenidTag);
+
+		var contractAddressTag = document.createElement("h2");
+		contractAddressTag.innerHTML = "Contract Address: " + contractAddress;
+		display.appendChild(contractAddressTag);
+
+		var imageTag = document.createElement("img");
+		imageTag.setAttribute("src", image);
+		display.appendChild(imageTag);
+
+		var lineBreak = document.createElement("hr");
+		lineBreak.setAttribute("width", "100%");
+		lineBreak.setAttribute("size", "3");
+		lineBreak.setAttribute("color", "blue");
+		display.appendChild(lineBreak);
+	}
+}
+
+function next20(){
+	currentNFTWindow += 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += address;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	openSea(url);
+}
+
+function prev20(){
+	currentNFTWindow -= 20;
+	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	url += address;
+	url += "&order_direction=desc&offset=";
+	url += currentNFTWindow.toString(10); 
+	url += "&limit=20";
+	openSea(url);
 }
 
 </script>
@@ -31,7 +111,11 @@ async function login() {
     <h1>Moralis Hello World!</h1>
 
     <button id="btn-login" onclick = "login()">Moralis Metamask Login</button>
-    <button id="btn-logout">Logout</button>
+    <h2> Your Address: </h2>
+	<h2 id = "addressHere"> </h2>
+<button onclick = "next20()"> Next </button>
+<button onclick = "prev20()"> Previous </button>
+<div id = "display"> </div>
 
     
   </body>
