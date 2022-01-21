@@ -22,7 +22,13 @@ async function login() {
   if (!user) {
     user = await Moralis.authenticate({ signingMessage: "Log in using Moralis" })
       .then(function (user) {
-        document.getElementById("addressHere").innerHTML = user.get("ethAddress");
+        
+	})
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+document.getElementById("addressHere").innerHTML = user.get("ethAddress");
       address = user.get("ethAddress");
 	console.log(user.get("ethAddress"));
 	var url = "https://api.opensea.io/api/v1/assets?owner=";
@@ -30,11 +36,6 @@ async function login() {
 	url += "&order_direction=desc&offset=0&limit=20";
 	
 	openSea(url);
-	})
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
 }
 
 function openSea(url){
