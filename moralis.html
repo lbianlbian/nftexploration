@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vanilla Boilerplate</title>
+    <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
+    <script>
+	/* Moralis init code */
+const serverUrl = "https://xgz77uvcnzvk.usemoralis.com:2053/server";
+const appId = "NPxW3n4VuNDB70y55qLhWhfP3pJThcsW1W4zjCT4";
+Moralis.start({ serverUrl, appId });
+
+async function login() {
+  let user = Moralis.User.current();
+  if (!user) {
+    user = await Moralis.authenticate({ signingMessage: "Log in using Moralis" })
+      .then(function (user) {
+        console.log("logged in user:", user);
+        console.log(user.get("ethAddress"));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+}
+
+</script>
+
+  </head>
+
+  <body>
+    <h1>Moralis Hello World!</h1>
+
+    <button id="btn-login" onclick = "login()">Moralis Metamask Login</button>
+    <button id="btn-logout">Logout</button>
+
+    
+  </body>
+</html>
