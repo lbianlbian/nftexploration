@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Vanilla Boilerplate</title>
+    <title>See my NFTs</title>
     <script src="https://unpkg.com/moralis/dist/moralis.js"></script>
 
 
@@ -57,10 +57,6 @@ function openSea(url){
 	}
 
 	for(var x = 0; x < numNFTs; x++){
-		var isERC721 = jsonified.assets[x].asset_contract.schema_name == "ERC721";
-		if(!isERC721){
-			continue;
-		}
 
 		var tokenid = jsonified.assets[x].token_id;
 		var image = jsonified.assets[x].image_preview_url;
@@ -78,6 +74,10 @@ function openSea(url){
 		var contractAddressTag = document.createElement("h2");
 		contractAddressTag.innerHTML = "Contract Address: " + contractAddress;
 		display.appendChild(contractAddressTag);
+
+		var schema = document.createElement("h2");
+		schema.innerHTML = jsonified.assets[x].asset_contract.schema_name;
+		display.append(schema); 
 
 		var imageTag = document.createElement("img");
 		imageTag.setAttribute("src", image);
@@ -113,7 +113,7 @@ function prev20(){
 
 </script>
 
-    <h1>Moralis Hello World!</h1>
+    <h1>Using Moralis to connect to MetaMask and display NFTs</h1>
 
     <button id="btn-login" onclick = "login()">Moralis Metamask Login</button>
     <h2> Your Address: </h2>
