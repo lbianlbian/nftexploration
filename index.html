@@ -68,13 +68,13 @@ function showNFTs(url){
 
 	for(var x = 0; x < numNFTs; x++){
 
-		if(jsonified.assets[x].asset_contract.schema_name != "ERC721"){
-			continue;
-		}
-
 		var contractAddress = document.createElement("h2");
 		contractAddress.innerHTML = "Contract address: " + jsonified.assets[x].asset_contract.address;
 		display.appendChild(contractAddress);
+
+		var schema = document.createElement("h2");
+		schema.innerHTML = jsonified.assets[x].asset_contract.schema_name;
+		display.append(schema); 
 
 		var collection = document.createElement("h2");
 		collection.innerHTML = "Collection: " + jsonified.assets[x].name;
