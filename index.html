@@ -33,19 +33,12 @@ function showNFTs(url){
 	globalAddress = address;
 
 	if(url == "firstTimeCalled"){
-		var url = "https://api.opensea.io/api/v1/assets?owner=";
+		var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 		url += address;
-		url += "&order_direction=desc&offset=0&limit=20";
+		url += "&offset=0";
 	}
 
-	/*
-	var url = "https://deep-index.moralis.io/api/v2/";
-	url += address;
-	url += "/nft?chain=eth&format=decimal";
-	*/
-
 	if(address.indexOf(" ") != -1){
-		console.log(address.substring(" "));
 		var message = document.createElement("h2");
 		message.innerHTML = "Valid Ethereum addresses have no spaces.";
 		display.appendChild(message);
@@ -54,11 +47,11 @@ function showNFTs(url){
 
 	var call = new XMLHttpRequest();
 	call.open("GET", url, false);
-	call.setRequestHeader("accept", "application/json");
-	//call.setRequestHeader("X-API-Key", "hdjpcFZv2FFYZgim7iDoGSBAXpl7b6511rvTDrNxPXhxuJ9LjgM33EXubaZHQOY5");
 	call.send();
-
-	var jsonified = JSON.parse(call.response);
+	
+	
+	var jsonified = JSON.parse(call.responseText);
+	jsonified = JSON.parse(jsonified);
 	var numNFTs = jsonified.assets.length;
 	if(numNFTs == 0){
 		var message = document.createElement("h2");
@@ -102,21 +95,19 @@ function showNFTs(url){
 
 function next20(){
 	currentNFTWindow += 20;
-	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 	url += globalAddress;
-	url += "&order_direction=desc&offset=";
+	url += "&offset=";
 	url += currentNFTWindow.toString(10); 
-	url += "&limit=20";
 	showNFTs(url);
 }
 
 function prev20(){
 	currentNFTWindow -= 20;
-	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 	url += globalAddress;
-	url += "&order_direction=desc&offset=";
+	url += "&offset=";
 	url += currentNFTWindow.toString(10); 
-	url += "&limit=20";
 	showNFTs(url);
 }
 
