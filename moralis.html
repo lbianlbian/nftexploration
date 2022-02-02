@@ -31,9 +31,9 @@ async function login() {
 document.getElementById("addressHere").innerHTML = user.get("ethAddress");
       address = user.get("ethAddress");
 	console.log(user.get("ethAddress"));
-	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 	url += address;
-	url += "&order_direction=desc&offset=0&limit=20";
+	url += "&offset=0";
 	
 	openSea(url);
 }
@@ -42,13 +42,12 @@ function openSea(url){
 	var display = document.getElementById("display");
 	display.innerHTML = "";
 
-	//var url = "https://api.opensea.io/api/v1/assets?owner=0x7da4b25d2a50518237b0099b185e6bcada568a86&order_direction=desc&offset=0&limit=20";
 	var call = new XMLHttpRequest();
 	call.open("GET", url, false);
-	call.setRequestHeader("Accept", "application/json");
 	call.send();
 	
 	var jsonified = JSON.parse(call.responseText);
+	jsonified = JSON.parse(jsonified);
 	var numNFTs = jsonified.assets.length;
 	if(numNFTs == 0){
 		var message = document.createElement("h2");
@@ -93,21 +92,20 @@ function openSea(url){
 
 function next20(){
 	currentNFTWindow += 20;
-	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 	url += address;
-	url += "&order_direction=desc&offset=";
+	url += "&offset=";
 	url += currentNFTWindow.toString(10); 
-	url += "&limit=20";
 	openSea(url);
 }
 
 function prev20(){
 	currentNFTWindow -= 20;
-	var url = "https://api.opensea.io/api/v1/assets?owner=";
+	currentNFTWindow += 20;
+	var url = "https://script.google.com/macros/s/AKfycbwjGW88tDeWi_VY2t5PYrajxkHsV8t1tbHonWm7EJkHcE44RYQJWrOc4-P-_W2_ASa3UA/exec?address=";
 	url += address;
-	url += "&order_direction=desc&offset=";
+	url += "&offset=";
 	url += currentNFTWindow.toString(10); 
-	url += "&limit=20";
 	openSea(url);
 }
 
