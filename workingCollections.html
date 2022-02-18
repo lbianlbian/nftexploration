@@ -1,0 +1,61 @@
+<html>
+<head>
+<title> Search collections by keyword </title>
+</head>
+<body>
+<h1> Enter a keyword below </h1>
+<input type = "text" id = "query">
+<button onclick = "search()"> Search </button>
+<div id = "display"> </div>
+
+<script>
+function search(){
+	document.getElementById("display").innerHTML = "";
+	var query = document.getElementById("query").value;
+	console.log(query);
+	var call = new XMLHttpRequest();
+	call.open("POST", "https://www.nft-stats.com/indexes/collections/search", false);
+	call.setRequestHeader("authorization", "Bearer zXmC2vZm63c6615681d59a3bc4b125cf6a2045abd4545afbba2061b4dab688c55348e3dc");
+	call.setRequestHeader("Content-Type", "application/json");
+	var payload = {
+	  "attributesToCrop": [
+	    "description:150"
+	  ],
+	  "attributesToHighlight": [
+	    "*"
+	  ],
+	  "limit": 40,
+	  "q": query
+	};
+
+	call.send(JSON.stringify(payload));
+	
+	var response = JSON.parse(call.response);
+	var results = response.hits;
+
+	for(var x = 0; x < results.length; x++){
+		var title = document.createElement("h2");
+		title.innerHTML = "Collection name: " + results[x].title;
+		display.appendChild(title);
+
+		var slug = document.createElement("h2");
+		slug.innerHTML = results[x].slug;
+		display.append(slug); 
+		
+		var image = document.createElement("img");
+		var imgUrl = results[x].image;		
+		image.setAttribute("src", imgUrl);
+		display.appendChild(image);
+		
+
+		var lineBreak = document.createElement("hr");
+		lineBreak.setAttribute("width", "100%");
+		lineBreak.setAttribute("size", "3");
+		lineBreak.setAttribute("color", "blue");
+		display.appendChild(lineBreak);
+	}
+}
+</script>
+
+</body>
+</html>
