@@ -12,7 +12,6 @@
 function search(){
 	document.getElementById("display").innerHTML = "";
 	var query = document.getElementById("query").value;
-	console.log(query);
 	var call = new XMLHttpRequest();
 	call.open("POST", "https://www.nft-stats.com/indexes/collections/search", false);
 	call.setRequestHeader("authorization", "Bearer zXmC2vZm63c6615681d59a3bc4b125cf6a2045abd4545afbba2061b4dab688c55348e3dc");
@@ -33,10 +32,29 @@ function search(){
 	var response = JSON.parse(call.response);
 	var results = response.hits;
 
+	if(results.length == 0){
+		var noneFound = document.createElement("h1");
+		noneFound.innerHTML = "No collections found for this keyword.";
+		display.appendChild(noneFound);
+	}
+
 	for(var x = 0; x < results.length; x++){
 		var title = document.createElement("h2");
 		title.innerHTML = "Collection name: " + results[x].title;
 		display.appendChild(title);
+
+		var verification = document.createElement("button");
+		verification.innerHTML = "Check verification status";
+		verification.setAttribute("onclick", "verify('" + results[x].slug + "')");
+		display.append(verification);
+
+		var blurb = document.createElement("h3");
+		blurb.innerHTML = "Verification status: ";
+		display.append(blurb);
+
+		var displayVerification = document.createElement("b");
+		displayVerification.setAttribute("id", results[x].slug);
+		display.append(displayVerification);
 
 		var slug = document.createElement("h2");
 		slug.innerHTML = results[x].slug;
@@ -46,7 +64,6 @@ function search(){
 		var imgUrl = results[x].image;		
 		image.setAttribute("src", imgUrl);
 		display.appendChild(image);
-		
 
 		var lineBreak = document.createElement("hr");
 		lineBreak.setAttribute("width", "100%");
@@ -55,6 +72,21 @@ function search(){
 		display.appendChild(lineBreak);
 	}
 }
+
+function verify(slug){
+//https://stackoverflow.com/questions/56351986/xmlhttprequest-returns-undefined-response-but-works-on-console-log
+	var verifyCall = new XMLHttpRequest();
+	var url = "https://api.opensea.io/api/v1/collection/" + slug;
+	verifyCall.open("GET", url, false);
+	verifyCall.setRequestHeader("X-API-KEY", "dbab3e85939f4986b0cdfb5e5fa6ecb5");
+	verifyCall.send();
+
+	
+	var jsonified = JSON.parse(verifyCall.responseText);
+	var approvalStatus = jsonified.collection.safelist_request_status;
+	document.getElementById(slug).innerHTML = approvalStatus;	
+}
+
 </script>
 
 </body>
